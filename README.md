@@ -1,4 +1,4 @@
-*API ROUTES*
+# API ROUTES
 
 1. **Create a New User**
    - **Method:** POST
@@ -57,3 +57,20 @@
    - **Description:** Searches for users based on the provided criteria (username, minAge, maxAge) and JWT token in the authorization header.
 
 **Note:** For routes requiring an authorization header, replace `<token>` with the actual JWT token provided upon user creation.
+
+
+# Environment Variables
+
+Below are the dummy environment variables for configuration purposes:
+
+## MongoDB Configuration
+- **MONGO_URI:** mongodb+srv://admin:dummyPassword123@cluster0.jp8gd5w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+## JWT Configuration
+- **JWT_SECRET:** dummySecretKey123
+
+## Redis Configuration
+- **REDIS_HOST:** dummy.redns.redis-cloud.com
+- **REDIS_PORT:** 12345
+- **REDIS_PASSWORD:** dummyRedisPassword456
+
