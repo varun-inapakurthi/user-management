@@ -44,7 +44,7 @@ export class UsersService {
 
       const payload = { id: savedUser._id };
 
-      const secret = process.env.JWT_SECRET || 'secret_key';
+      const secret = this.jwtSecret || 'secret_key';
 
       const token = jwt.sign(payload, secret);
 
@@ -80,7 +80,7 @@ export class UsersService {
    */
   async getUser(token: string): Promise<User | null> {
     try {
-      const secret = process.env.JWT_SECRET || 'secret_key';
+      const secret = this.jwtSecret || 'secret_key';
       const decodedToken = jwt.verify(token, secret) as { id: string };
       const userId = decodedToken.id;
       const cachedUser = await this.redis.get(`user:${userId}`);
@@ -114,7 +114,7 @@ export class UsersService {
    */
   async deleteUser(token: string) {
     try {
-      const secret = process.env.JWT_SECRET || 'secret_key';
+      const secret = this.jwtSecret || 'secret_key';
       const decodedToken = jwt.verify(token, secret) as { id: string };
       const userId = decodedToken.id;
 
@@ -139,7 +139,7 @@ export class UsersService {
    */
   async blockUser(blockedUserId: string, token: string): Promise<User | null> {
     try {
-      const secret = process.env.JWT_SECRET || 'secret_key';
+      const secret = this.jwtSecret || 'secret_key';
       const decodedToken = jwt.verify(token, secret) as { id: string };
       const userId = decodedToken.id;
       const user = await this.userModel.findById(userId);
@@ -189,7 +189,7 @@ export class UsersService {
     maxAge?: number,
   ): Promise<User[]> {
     try {
-      const secret = process.env.JWT_SECRET || 'secret_key';
+      const secret = this.jwtSecret || 'secret_key';
       const decodedToken = jwt.verify(token, secret) as { id: string };
       const userId = decodedToken.id;
       const blockedUsers = await this.blockModel.find({ userId });
@@ -244,7 +244,7 @@ export class UsersService {
    */
   async unblockUser(blockedUserId: string, token: string) {
     try {
-      const secret = process.env.JWT_SECRET || 'secret_key';
+      const secret = this.jwtSecret || 'secret_key';
       const decodedToken = jwt.verify(token, secret) as { id: string };
       const userId = decodedToken.id;
       await this.blockModel.deleteMany({
@@ -267,7 +267,7 @@ export class UsersService {
    */
   async updateUser(token: string, updateUserDto: UpdateUserDto): Promise<User> {
     try {
-      const secret = process.env.JWT_SECRET || 'secret_key';
+      const secret = this.jwtSecret || 'secret_key';
       const decodedToken = jwt.verify(token, secret) as { id: string };
       const userId = decodedToken.id;
       const updatedUser = await this.userModel.findByIdAndUpdate(
