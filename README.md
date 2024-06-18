@@ -62,6 +62,7 @@
 # Environment Variables
 
 Below are the dummy environment variables for configuration purposes:
+Note: create a .env file at root and add the below varables
 
 ## MongoDB Configuration
 - **MONGO_URI:** mongodb+srv://admin:dummyPassword123@cluster0.jp8gd5w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
