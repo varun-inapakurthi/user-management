@@ -1,4 +1,4 @@
-
+*API ROUTES*
 
 1. **Create a New User**
    - **Method:** POST
