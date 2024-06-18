@@ -9,21 +9,25 @@ import { Block } from 'src/schemas/Block.schema';
 import { Types } from 'mongoose';
 import Redis from 'ioredis';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
-
-const defaultOptions = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: Number(process.env.REDIS_PORT) || 6379,
-  password: process.env.REDIS_PASSWORD || null,
-};
-
-const redis = new Redis(defaultOptions);
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
+  private readonly jwtSecret: string;
+  private readonly redis: Redis;
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Block.name) private blockModel: Model<Block>,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.jwtSecret =
+      this.configService.get<string>('JWT_SECRET') || 'secret_key';
+    this.redis = new Redis({
+      host: this.configService.get<string>('REDIS_HOST') || 'localhost',
+      port: Number(this.configService.get<string>('REDIS_PORT')) || 6379,
+      password: this.configService.get<string>('REDIS_PASSWORD') || null,
+    });
+  }
 
   /**
    * Creates a new user and generates an authentication token.
@@ -79,7 +83,7 @@ export class UsersService {
       const secret = process.env.JWT_SECRET || 'secret_key';
       const decodedToken = jwt.verify(token, secret) as { id: string };
       const userId = decodedToken.id;
-      const cachedUser = await redis.get(`user:${userId}`);
+      const cachedUser = await this.redis.get(`user:${userId}`);
       if (cachedUser) {
         return JSON.parse(cachedUser) as User;
       }
@@ -87,7 +91,12 @@ export class UsersService {
       const user = await this.userModel.findById(userId);
 
       if (user) {
-        await redis.set(`user:${userId}`, JSON.stringify(user), 'EX', 3600);
+        await this.redis.set(
+          `user:${userId}`,
+          JSON.stringify(user),
+          'EX',
+          3600,
+        );
       }
 
       return user;
@@ -270,7 +279,7 @@ export class UsersService {
         throw new Error('User not found');
       }
       if (updatedUser) {
-        await redis.set(
+        await this.redis.set(
           `user:${userId}`,
           JSON.stringify(updatedUser),
           'EX',
